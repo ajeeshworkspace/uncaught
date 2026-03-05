@@ -1,0 +1,53 @@
+{
+  "name": "@uncaught/supabase",
+  "version": "0.1.0",
+  "description": "Supabase client wrapper for Uncaught — captures failed queries, auth errors, and function invocations",
+  "license": "MIT",
+  "author": "Uncaught",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AjeeshDevops/uncaught.git",
+    "directory": "packages/supabase"
+  },
+  "homepage": "https://github.com/AjeeshDevops/uncaught#readme",
+  "keywords": [
+    "supabase",
+    "error-monitoring",
+    "query-tracking",
+    "rls",
+    "debugging"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": ">=2.0.0",
+    "@uncaught/core": "workspace:*"
+  },
+  "dependencies": {
+    "@uncaught/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.43.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
