@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST='{"../packages/core/dist/index.mjs -> fs/promises":{"id":4734,"files":["static/chunks/734.d85299c32c634bcb.js"]},"../packages/core/dist/index.mjs -> path":{"id":5974,"files":["static/chunks/974.6c98214cb0b18b15.js"]}}';
