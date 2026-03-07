@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS issues (
   last_seen         TEXT NOT NULL,
   status            TEXT NOT NULL DEFAULT 'open',
   fix_prompt_file   TEXT NOT NULL DEFAULT '',
-  latest_event_file TEXT NOT NULL DEFAULT ''
+  latest_event_file TEXT NOT NULL DEFAULT '',
+  release           TEXT NOT NULL DEFAULT '',
+  environment       TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX IF NOT EXISTS idx_issues_status ON issues(status);
@@ -45,13 +47,19 @@ CREATE TABLE IF NOT EXISTS _meta (
 );
 `;
 
+// Migrate existing databases that lack new columns
+const MIGRATION_SQL = `
+ALTER TABLE issues ADD COLUMN release TEXT NOT NULL DEFAULT '';
+ALTER TABLE issues ADD COLUMN environment TEXT NOT NULL DEFAULT '';
+`;
+
 // ---------------------------------------------------------------------------
 // Public interface
 // ---------------------------------------------------------------------------
 
 export interface SqliteStore {
   upsertIssue(entry: IssueEntry): void;
-  getIssues(filter?: { status?: IssueStatus }): IssueEntry[];
+  getIssues(filter?: { status?: IssueStatus; environment?: string }): IssueEntry[];
   getIssue(fingerprint: string): IssueEntry | undefined;
   updateIssueStatus(fingerprint: string, status: IssueStatus): void;
   deleteAllIssues(): void;
@@ -78,10 +86,17 @@ export function openStore(dbPath: string): SqliteStore {
   db.pragma('foreign_keys = ON');
   db.exec(SCHEMA_SQL);
 
+  // Run migrations for existing databases
+  try {
+    for (const stmt of MIGRATION_SQL.trim().split(';').filter(Boolean)) {
+      try { db.exec(stmt + ';'); } catch { /* column already exists */ }
+    }
+  } catch { /* migration best-effort */ }
+
   // Prepared statements
   const stmtUpsertIssue = db.prepare(`
-    INSERT INTO issues (fingerprint, title, error_type, count, affected_users, first_seen, last_seen, status, fix_prompt_file, latest_event_file)
-    VALUES (@fingerprint, @title, @error_type, @count, @affected_users, @first_seen, @last_seen, @status, @fix_prompt_file, @latest_event_file)
+    INSERT INTO issues (fingerprint, title, error_type, count, affected_users, first_seen, last_seen, status, fix_prompt_file, latest_event_file, release, environment)
+    VALUES (@fingerprint, @title, @error_type, @count, @affected_users, @first_seen, @last_seen, @status, @fix_prompt_file, @latest_event_file, @release, @environment)
     ON CONFLICT(fingerprint) DO UPDATE SET
       title = @title,
       error_type = @error_type,
@@ -91,11 +106,15 @@ export function openStore(dbPath: string): SqliteStore {
       last_seen = @last_seen,
       status = @status,
       fix_prompt_file = @fix_prompt_file,
-      latest_event_file = @latest_event_file
+      latest_event_file = @latest_event_file,
+      release = @release,
+      environment = @environment
   `);
 
   const stmtGetIssues = db.prepare('SELECT * FROM issues ORDER BY last_seen DESC');
   const stmtGetIssuesByStatus = db.prepare('SELECT * FROM issues WHERE status = ? ORDER BY last_seen DESC');
+  const stmtGetIssuesByEnv = db.prepare('SELECT * FROM issues WHERE environment = ? ORDER BY last_seen DESC');
+  const stmtGetIssuesByStatusAndEnv = db.prepare('SELECT * FROM issues WHERE status = ? AND environment = ? ORDER BY last_seen DESC');
   const stmtGetIssue = db.prepare('SELECT * FROM issues WHERE fingerprint = ?');
   const stmtUpdateStatus = db.prepare('UPDATE issues SET status = ? WHERE fingerprint = ?');
   const stmtDeleteAllIssues = db.prepare('DELETE FROM issues');
@@ -130,6 +149,8 @@ export function openStore(dbPath: string): SqliteStore {
       status: row.status as IssueStatus,
       fixPromptFile: row.fix_prompt_file as string,
       latestEventFile: row.latest_event_file as string,
+      release: (row.release as string) || undefined,
+      environment: (row.environment as string) || undefined,
     };
   }
 
@@ -146,6 +167,8 @@ export function openStore(dbPath: string): SqliteStore {
       status: entry.status,
       fix_prompt_file: entry.fixPromptFile,
       latest_event_file: entry.latestEventFile,
+      release: entry.release ?? '',
+      environment: entry.environment ?? '',
     };
   }
 
@@ -177,6 +200,8 @@ export function openStore(dbPath: string): SqliteStore {
       existing.lastSeen = event.timestamp;
       existing.latestEventFile = eventFile;
       existing.fixPromptFile = promptFile;
+      existing.release = event.release ?? existing.release;
+      existing.environment = event.environment?.deploy ?? existing.environment;
       if (!existing.affectedUsers.includes(String(userId))) {
         existing.affectedUsers.push(String(userId));
       }
@@ -196,6 +221,8 @@ export function openStore(dbPath: string): SqliteStore {
         status: 'open',
         fixPromptFile: promptFile,
         latestEventFile: eventFile,
+        release: event.release,
+        environment: event.environment?.deploy,
       }));
     }
   });
@@ -205,10 +232,17 @@ export function openStore(dbPath: string): SqliteStore {
       stmtUpsertIssue.run(issueToParams(entry));
     },
 
-    getIssues(filter?: { status?: IssueStatus }): IssueEntry[] {
-      const rows = filter?.status
-        ? stmtGetIssuesByStatus.all(filter.status)
-        : stmtGetIssues.all();
+    getIssues(filter?: { status?: IssueStatus; environment?: string }): IssueEntry[] {
+      let rows: unknown[];
+      if (filter?.status && filter?.environment) {
+        rows = stmtGetIssuesByStatusAndEnv.all(filter.status, filter.environment);
+      } else if (filter?.status) {
+        rows = stmtGetIssuesByStatus.all(filter.status);
+      } else if (filter?.environment) {
+        rows = stmtGetIssuesByEnv.all(filter.environment);
+      } else {
+        rows = stmtGetIssues.all();
+      }
       return (rows as Record<string, unknown>[]).map(rowToIssue);
     },
 

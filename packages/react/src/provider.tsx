@@ -8,6 +8,7 @@ import { UncaughtErrorBoundary } from './error-boundary';
 import { setupGlobalHandlers } from './global-handlers';
 import { setupDomBreadcrumbs } from './dom-breadcrumbs';
 import { setupNextJsNavigation, detectNextJs } from './next-integration';
+import { setupWebVitals } from './web-vitals';
 import type { UncaughtProviderProps } from './types';
 
 /**
@@ -94,6 +95,16 @@ export function UncaughtProvider({
             '[Uncaught] Failed to set up DOM breadcrumbs:',
             e
           );
+        }
+      }
+
+      // Set up Web Vitals tracking
+      try {
+        const cleanupVitals = setupWebVitals(uncaughtClient);
+        cleanups.push(cleanupVitals);
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Uncaught] Failed to set up Web Vitals:', e);
         }
       }
 

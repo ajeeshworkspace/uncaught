@@ -3,10 +3,13 @@ export { UncaughtProvider } from './provider';
 export { UncaughtErrorBoundary } from './error-boundary';
 
 // --- React Hooks ---
-export { useUncaught, useReportError, useBreadcrumb } from './hooks';
+export { useUncaught, useReportError, useBreadcrumb, useErrorHandler, withErrorCapture } from './hooks';
 
 // --- React Context ---
 export { UncaughtContext } from './context';
+
+// --- Web Vitals ---
+export { setupWebVitals } from './web-vitals';
 
 // --- Next.js Integration ---
 export { detectNextJs, setupNextJsNavigation, withUncaught } from './next-integration';

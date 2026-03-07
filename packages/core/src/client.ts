@@ -14,7 +14,7 @@ import type {
   OperationInfo,
 } from './types';
 
-import { generateUUID, isoTimestamp } from './utils';
+import { generateUUID, isoTimestamp, safeStringify } from './utils';
 import { createBreadcrumbStore } from './breadcrumbs';
 import { sanitize } from './sanitizer';
 import { generateFingerprint } from './fingerprint';
@@ -63,6 +63,7 @@ export class UncaughtClient {
   private readonly transport: Transport;
   private readonly rateLimiter: RateLimiter;
   private readonly sessionId: string;
+  private readonly seenFingerprints = new Set<string>();
   private user: UserInfo | undefined;
 
   constructor(config: UncaughtConfig) {
@@ -83,6 +84,13 @@ export class UncaughtClient {
   // -----------------------------------------------------------------------
   // Public API
   // -----------------------------------------------------------------------
+
+  /**
+   * Return the current SDK configuration.
+   */
+  getConfig(): UncaughtConfig {
+    return this.config;
+  }
 
   /**
    * Capture an error and send it through the transport pipeline.
@@ -129,6 +137,11 @@ export class UncaughtClient {
       // --- Detect environment ----------------------------------------------
       const environment = detectEnvironment();
 
+      // Attach deployment environment from config
+      if (this.config.environment) {
+        environment.deploy = this.config.environment;
+      }
+
       // --- Build event -----------------------------------------------------
       const eventId = generateUUID();
       let event: UncaughtEvent = {
@@ -137,6 +150,7 @@ export class UncaughtClient {
         projectKey: this.config.projectKey,
         level: context?.level ?? 'error',
         fingerprint,
+        release: this.config.release,
         error: errorInfo,
         breadcrumbs: crumbs,
         request: context?.request,
@@ -168,6 +182,15 @@ export class UncaughtClient {
       // --- Send ------------------------------------------------------------
       this.transport.send(event);
       this.debugLog(`Captured event: ${eventId} (${fingerprint})`);
+
+      // --- Webhook notification (new fingerprints only) --------------------
+      if (this.config.webhookUrl && !this.seenFingerprints.has(fingerprint)) {
+        this.seenFingerprints.add(fingerprint);
+        this.sendWebhook(event);
+      } else {
+        this.seenFingerprints.add(fingerprint);
+      }
+
       return eventId;
     } catch (err) {
       this.debugLog('captureError failed:', err);
@@ -214,6 +237,36 @@ export class UncaughtClient {
   }
 
   /**
+   * Attach user feedback to a previously captured event.
+   * Re-sends the event with feedback attached so it persists.
+   */
+  submitFeedback(eventId: string, feedback: string): void {
+    try {
+      if (!this.config.enabled || !feedback.trim()) return;
+
+      // Send a lightweight feedback event
+      const event: UncaughtEvent = {
+        eventId: generateUUID(),
+        timestamp: isoTimestamp(),
+        projectKey: this.config.projectKey,
+        level: 'info',
+        fingerprint: `feedback-${eventId}`,
+        release: this.config.release,
+        error: { message: `User feedback for ${eventId}`, type: 'UserFeedback' },
+        breadcrumbs: [],
+        userFeedback: feedback,
+        fixPrompt: '',
+        sdk: { name: SDK_NAME, version: SDK_VERSION },
+      };
+
+      this.transport.send(event);
+      this.debugLog(`Submitted feedback for event: ${eventId}`);
+    } catch (err) {
+      this.debugLog('submitFeedback failed:', err);
+    }
+  }
+
+  /**
    * Flush all queued events to the transport.
    */
   async flush(): Promise<void> {
@@ -241,6 +294,41 @@ export class UncaughtClient {
     }
 
     return false;
+  }
+
+  /**
+   * POST a notification to the configured webhook URL for new error fingerprints.
+   * Fire-and-forget — never blocks the error pipeline.
+   */
+  private sendWebhook(event: UncaughtEvent): void {
+    try {
+      const payload = {
+        title: event.error.message,
+        errorType: event.error.type,
+        fingerprint: event.fingerprint,
+        level: event.level,
+        timestamp: event.timestamp,
+        release: event.release,
+        environment: event.environment?.deploy,
+        fixPrompt: event.fixPrompt,
+      };
+
+      const body = safeStringify(payload);
+      const url = this.config.webhookUrl!;
+
+      // Use fetch in browser, dynamic import in Node
+      if (typeof fetch === 'function') {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+        }).catch(() => {
+          // Swallow — webhook is best-effort
+        });
+      }
+    } catch {
+      // Never crash from webhook
+    }
   }
 
   private debugLog(...args: unknown[]): void {

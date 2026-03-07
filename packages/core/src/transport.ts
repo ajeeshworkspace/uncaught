@@ -270,6 +270,8 @@ async function updateIssuesIndex(
       status: 'open',
       fixPromptFile: promptFile,
       latestEventFile: eventFile,
+      release: event.release,
+      environment: event.environment?.deploy,
     });
   }
 

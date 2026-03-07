@@ -20,7 +20,7 @@ import type { UncaughtErrorBoundaryProps, ErrorBoundaryState } from './types';
  */
 export class UncaughtErrorBoundary extends Component<
   UncaughtErrorBoundaryProps,
-  ErrorBoundaryState
+  ErrorBoundaryState & { feedback: string; feedbackSent: boolean; lastEventId: string | null }
 > {
   static contextType = UncaughtContext;
   declare context: React.ContextType<typeof UncaughtContext>;
@@ -32,13 +32,19 @@ export class UncaughtErrorBoundary extends Component<
     this.state = {
       hasError: false,
       error: null,
+      feedback: '',
+      feedbackSent: false,
+      lastEventId: null,
     };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState & { feedback: string; feedbackSent: boolean; lastEventId: string | null }> {
     return {
       hasError: true,
       error,
+      feedback: '',
+      feedbackSent: false,
+      lastEventId: null,
     };
   }
 
@@ -134,8 +140,11 @@ export class UncaughtErrorBoundary extends Component<
       return fallback;
     }
 
-    // Default dialog UI
+    // Default dialog UI with feedback form
     if (showDialog) {
+      const { feedback, feedbackSent } = this.state;
+      const client: UncaughtClient | null = this.context?.client ?? null;
+
       return (
         <div
           style={{
@@ -189,7 +198,7 @@ export class UncaughtErrorBoundary extends Component<
             </h2>
             <p
               style={{
-                margin: '0 0 24px',
+                margin: '0 0 16px',
                 fontSize: '14px',
                 color: '#6b7280',
                 lineHeight: 1.5,
@@ -209,7 +218,7 @@ export class UncaughtErrorBoundary extends Component<
                   color: '#dc2626',
                   overflow: 'auto',
                   maxHeight: '120px',
-                  marginBottom: '24px',
+                  marginBottom: '16px',
                   whiteSpace: 'pre-wrap',
                   wordBreak: 'break-word',
                 }}
@@ -217,6 +226,77 @@ export class UncaughtErrorBoundary extends Component<
                 {error.message}
                 {error.stack && `\n\n${error.stack}`}
               </pre>
+            )}
+            {/* User feedback form */}
+            {!feedbackSent ? (
+              <div style={{ marginBottom: '16px', textAlign: 'left' }}>
+                <label
+                  htmlFor="uncaught-feedback"
+                  style={{
+                    display: 'block',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#374151',
+                    marginBottom: '6px',
+                  }}
+                >
+                  What were you doing when this happened?
+                </label>
+                <textarea
+                  id="uncaught-feedback"
+                  value={feedback}
+                  onChange={(e) => this.setState({ feedback: e.target.value })}
+                  placeholder="Describe what you were doing..."
+                  style={{
+                    width: '100%',
+                    minHeight: '80px',
+                    padding: '8px 12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                {feedback.trim() && (
+                  <button
+                    onClick={() => {
+                      try {
+                        if (client && feedback.trim()) {
+                          client.submitFeedback?.('', feedback.trim());
+                          this.setState({ feedbackSent: true });
+                        }
+                      } catch {
+                        // Never crash
+                      }
+                    }}
+                    style={{
+                      marginTop: '8px',
+                      backgroundColor: '#059669',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Send Feedback
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: '#059669',
+                  marginBottom: '16px',
+                }}
+              >
+                Thank you for your feedback!
+              </p>
             )}
             <button
               onClick={() => {

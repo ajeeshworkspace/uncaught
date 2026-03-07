@@ -63,6 +63,12 @@ export interface UncaughtConfig {
    * Defaults to `process.cwd() + '/.uncaught'`.
    */
   localOutputDir?: string;
+
+  /**
+   * Webhook URL to POST notifications when a new error fingerprint is first seen.
+   * Payload: `{ title, errorType, fingerprint, level, timestamp, release, environment, fixPrompt }`.
+   */
+  webhookUrl?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -74,6 +80,7 @@ export interface ErrorInfo {
   message: string;
   type: string;
   stack?: string;
+  resolvedStack?: string;
   componentStack?: string;
   raw?: unknown;
 }
@@ -120,12 +127,14 @@ export interface UncaughtEvent {
   projectKey?: string;
   level: SeverityLevel;
   fingerprint: string;
+  release?: string;
   error: ErrorInfo;
   breadcrumbs: Breadcrumb[];
   request?: RequestInfo;
   operation?: OperationInfo;
   environment?: EnvironmentInfo;
   user?: UserInfo;
+  userFeedback?: string;
   fixPrompt: string;
   sdk: SdkInfo;
 }
@@ -142,6 +151,7 @@ export type BreadcrumbType =
   | 'db_query'
   | 'auth'
   | 'console'
+  | 'web_vital'
   | 'custom';
 
 /** A single breadcrumb entry. */
@@ -184,6 +194,7 @@ export interface EnvironmentInfo {
   locale?: string;
   timezone?: string;
   url?: string;
+  deploy?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -222,4 +233,6 @@ export interface IssueEntry {
   status: IssueStatus;
   fixPromptFile: string;
   latestEventFile: string;
+  release?: string;
+  environment?: string;
 }

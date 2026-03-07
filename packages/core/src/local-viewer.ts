@@ -791,6 +791,10 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   .badge-open { background: #3b1111; color: #f87171; }
   .badge-resolved { background: #0f2f1a; color: #4ade80; }
   .badge-ignored { background: #2d2305; color: #facc15; }
+  .badge-release { background: #1e1e3e; color: #a78bfa; font-size: 0.7rem; margin-left: 6px; }
+  .badge-env { background: #1a2e1a; color: #86efac; font-size: 0.7rem; margin-left: 4px; }
+  .env-filter { background: #1a1a1a; border: 1px solid #333; color: #aaa; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; margin-left: 8px; }
+  .feedback-box { background: #1a1a2e; border: 1px solid #2e2e5c; border-radius: 8px; padding: 12px 16px; margin-top: 8px; font-style: italic; color: #c4b5fd; }
   .count { background: #1e1e2e; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; }
   .error-type { color: #f87171; font-weight: 500; font-size: 0.8rem; }
   .error-title { color: #e0e0e0; }
@@ -858,11 +862,14 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   <button class="filter-btn" data-filter="open">Open</button>
   <button class="filter-btn" data-filter="resolved">Resolved</button>
   <button class="filter-btn" data-filter="ignored">Ignored</button>
+  <select class="env-filter" id="env-filter">
+    <option value="">All Environments</option>
+  </select>
 </div>
 <div class="container">
   <table>
     <thead>
-      <tr><th>#</th><th>Status</th><th>Error</th><th>Count</th><th>Users</th><th>Last Seen</th></tr>
+      <tr><th>#</th><th>Status</th><th>Error</th><th>Release</th><th>Count</th><th>Users</th><th>Last Seen</th></tr>
     </thead>
     <tbody id="issues-body"></tbody>
   </table>
@@ -882,16 +889,30 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 <script>
 let allIssues = [];
 let currentFilter = 'all';
+let currentEnv = '';
 let selectedFp = null;
 
 async function fetchIssues() {
   try {
-    const url = currentFilter === 'all' ? '/api/issues' : '/api/issues?status=' + currentFilter;
+    var params = [];
+    if (currentFilter !== 'all') params.push('status=' + currentFilter);
+    if (currentEnv) params.push('environment=' + encodeURIComponent(currentEnv));
+    var url = '/api/issues' + (params.length ? '?' + params.join('&') : '');
     const res = await fetch(url);
     allIssues = await res.json();
     renderIssues();
     fetchStats();
+    updateEnvFilter();
   } catch(e) { console.error('Failed to fetch issues', e); }
+}
+
+function updateEnvFilter() {
+  var sel = document.getElementById('env-filter');
+  var envs = new Set();
+  allIssues.forEach(function(i) { if (i.environment) envs.add(i.environment); });
+  var opts = '<option value="">All Environments</option>';
+  envs.forEach(function(e) { opts += '<option value="' + escHtml(e) + '"' + (e === currentEnv ? ' selected' : '') + '>' + escHtml(e) + '</option>'; });
+  sel.innerHTML = opts;
 }
 
 async function fetchStats() {
@@ -928,10 +949,13 @@ function renderIssues() {
   empty.style.display = 'none';
   body.innerHTML = allIssues.map(function(issue, i) {
     const cls = issue.status === 'open' ? 'badge-open' : issue.status === 'resolved' ? 'badge-resolved' : 'badge-ignored';
+    var relBadge = issue.release ? '<span class="badge badge-release">' + escHtml(issue.release) + '</span>' : '<span style="color:#555">—</span>';
+    var envBadge = issue.environment ? '<span class="badge badge-env">' + escHtml(issue.environment) + '</span>' : '';
     return '<tr data-fp="' + issue.fingerprint + '" class="' + (issue.fingerprint === selectedFp ? 'selected' : '') + '">' +
       '<td>' + (i+1) + '</td>' +
-      '<td><span class="badge ' + cls + '">' + issue.status + '</span></td>' +
+      '<td><span class="badge ' + cls + '">' + issue.status + '</span>' + envBadge + '</td>' +
       '<td><span class="error-type">' + escHtml(issue.errorType) + '</span> <span class="error-title">' + escHtml(issue.title.length > 60 ? issue.title.slice(0,57) + '...' : issue.title) + '</span></td>' +
+      '<td>' + relBadge + '</td>' +
       '<td><span class="count">' + issue.count + '</span></td>' +
       '<td>' + issue.affectedUsers.length + '</td>' +
       '<td class="time-ago">' + timeAgo(issue.lastSeen) + '</td>' +
@@ -992,18 +1016,34 @@ async function showDetail(fp) {
     html += '<div class="meta-item"><div class="meta-label">First Seen</div><div class="meta-value">' + timeAgo(issue.firstSeen) + '</div></div>';
     html += '<div class="meta-item"><div class="meta-label">Last Seen</div><div class="meta-value">' + timeAgo(issue.lastSeen) + '</div></div>';
     html += '<div class="meta-item"><div class="meta-label">Status</div><div class="meta-value"><span class="badge badge-' + issue.status + '">' + issue.status + '</span></div></div>';
+    if (issue.release) html += '<div class="meta-item"><div class="meta-label">Release</div><div class="meta-value"><span class="badge badge-release">' + escHtml(issue.release) + '</span></div></div>';
+    if (issue.environment) html += '<div class="meta-item"><div class="meta-label">Environment</div><div class="meta-value"><span class="badge badge-env">' + escHtml(issue.environment) + '</span></div></div>';
     html += '</div></div>';
 
     if (event) {
-      // Stack trace
-      if (event.error && event.error.stack) {
-        html += '<div class="detail-section"><h3>Stack Trace</h3><pre><code>' + escHtml(event.error.stack) + '</code></pre></div>';
+      // User feedback
+      if (event.userFeedback) {
+        html += '<div class="detail-section"><h3>User Feedback</h3><div class="feedback-box">"' + escHtml(event.userFeedback) + '"</div></div>';
+      }
+
+      // Stack trace (prefer resolved)
+      var stackLabel = 'Stack Trace';
+      var stackContent = '';
+      if (event.error && event.error.resolvedStack) {
+        stackLabel = 'Stack Trace (Source Mapped)';
+        stackContent = event.error.resolvedStack;
+      } else if (event.error && event.error.stack) {
+        stackContent = event.error.stack;
+      }
+      if (stackContent) {
+        html += '<div class="detail-section"><h3>' + stackLabel + '</h3><pre><code>' + escHtml(stackContent) + '</code></pre></div>';
       }
 
       // Environment
       if (event.environment) {
         const env = event.environment;
         html += '<div class="detail-section"><h3>Environment</h3><div class="detail-meta">';
+        if (env.deploy) html += '<div class="meta-item"><div class="meta-label">Deploy Env</div><div class="meta-value">' + escHtml(env.deploy) + '</div></div>';
         if (env.browser) html += '<div class="meta-item"><div class="meta-label">Browser</div><div class="meta-value">' + escHtml(env.browser + (env.browserVersion ? ' ' + env.browserVersion : '')) + '</div></div>';
         if (env.os) html += '<div class="meta-item"><div class="meta-label">OS</div><div class="meta-value">' + escHtml(env.os) + '</div></div>';
         if (env.runtime) html += '<div class="meta-item"><div class="meta-label">Runtime</div><div class="meta-value">' + escHtml(env.runtime) + '</div></div>';
@@ -1075,6 +1115,11 @@ document.getElementById('filters').addEventListener('click', function(e) {
   fetchIssues();
 });
 
+document.getElementById('env-filter').addEventListener('change', function(e) {
+  currentEnv = e.target.value;
+  fetchIssues();
+});
+
 // Close on Escape
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
@@ -1133,7 +1178,11 @@ async function cmdDashboard(port: number): Promise<void> {
       // GET /api/issues
       if (pathname === '/api/issues' && req.method === 'GET') {
         const status = url.searchParams.get('status') as IssueStatus | null;
-        const issues = status ? store.getIssues({ status }) : store.getIssues();
+        const environment = url.searchParams.get('environment') || undefined;
+        const filter: { status?: IssueStatus; environment?: string } = {};
+        if (status) filter.status = status;
+        if (environment) filter.environment = environment;
+        const issues = Object.keys(filter).length > 0 ? store.getIssues(filter) : store.getIssues();
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(issues));
         return;

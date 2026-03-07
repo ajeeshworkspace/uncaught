@@ -31,13 +31,15 @@ export function buildFixPrompt(event: Partial<UncaughtEvent>): string {
   }
 
   // ----- Stack Trace -------------------------------------------------------
-  if (event.error?.stack) {
-    const frames = event.error.stack
+  const stackSource = event.error?.resolvedStack ?? event.error?.stack;
+  if (stackSource) {
+    const frames = stackSource
       .split('\n')
       .slice(0, 15)
       .map((l) => l.trimEnd())
       .join('\n');
-    sections.push(`## Stack Trace\n\n\`\`\`\n${frames}\n\`\`\``);
+    const label = event.error?.resolvedStack ? 'Stack Trace (source-mapped)' : 'Stack Trace';
+    sections.push(`## ${label}\n\n\`\`\`\n${frames}\n\`\`\``);
   }
 
   // ----- Failed Operation --------------------------------------------------
@@ -174,6 +176,7 @@ function formatTime(iso: string): string {
 function formatEnvironment(env: EnvironmentInfo): string {
   const lines: string[] = ['## Environment', ''];
   const entries: Array<[string, string | undefined]> = [
+    ['Deploy Environment', env.deploy],
     ['Framework', env.framework],
     ['Framework Version', env.frameworkVersion],
     ['Runtime', env.runtime],

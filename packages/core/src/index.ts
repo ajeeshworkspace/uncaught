@@ -12,3 +12,5 @@ export { createRateLimiter } from './rate-limiter';
 export { detectEnvironment } from './env-detector';
 export { createTransport } from './transport';
 export { generateUUID, safeStringify, isoTimestamp, truncate } from './utils';
+export { setupNodeHandlers, expressErrorHandler, fastifyErrorPlugin } from './node-handlers';
+export { resolveStackTrace, clearSourceMapCache } from './source-maps';

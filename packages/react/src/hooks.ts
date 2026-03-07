@@ -67,6 +67,95 @@ export function useReportError(): (
  *
  * @returns A function `(breadcrumb: Partial<Breadcrumb>) => void`
  */
+/**
+ * Wraps a callback function with error capture.
+ * Use this for event handlers (onClick, onChange, etc.) that React Error
+ * Boundary does not catch.
+ *
+ * @example
+ * ```tsx
+ * const handleClick = useErrorHandler((e) => {
+ *   // risky code that might throw
+ * });
+ * <button onClick={handleClick}>Click</button>
+ * ```
+ */
+export function useErrorHandler<T extends (...args: unknown[]) => unknown>(
+  fn: T
+): T {
+  const { client } = useContext(UncaughtContext);
+
+  return useCallback(
+    ((...args: unknown[]) => {
+      try {
+        const result = fn(...args);
+        // Handle async functions
+        if (result instanceof Promise) {
+          return result.catch((error: unknown) => {
+            try {
+              if (client) {
+                client.captureError(error);
+              }
+            } catch {
+              // Never crash
+            }
+            throw error; // Re-throw so app error handling still works
+          });
+        }
+        return result;
+      } catch (error) {
+        try {
+          if (client) {
+            client.captureError(error);
+          }
+        } catch {
+          // Never crash
+        }
+        throw error; // Re-throw so app error handling still works
+      }
+    }) as T,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fn, client]
+  );
+}
+
+/**
+ * Standalone HOF (non-hook) that wraps a function with error capture.
+ * Use in class components or outside React context.
+ */
+export function withErrorCapture<T extends (...args: unknown[]) => unknown>(
+  fn: T,
+  client?: UncaughtClient | null
+): T {
+  return ((...args: unknown[]) => {
+    try {
+      const result = fn(...args);
+      if (result instanceof Promise) {
+        return result.catch((error: unknown) => {
+          try {
+            if (client) {
+              client.captureError(error);
+            }
+          } catch {
+            // Never crash
+          }
+          throw error;
+        });
+      }
+      return result;
+    } catch (error) {
+      try {
+        if (client) {
+          client.captureError(error);
+        }
+      } catch {
+        // Never crash
+      }
+      throw error;
+    }
+  }) as T;
+}
+
 export function useBreadcrumb(): (breadcrumb: Partial<Breadcrumb>) => void {
   const { client } = useContext(UncaughtContext);
 

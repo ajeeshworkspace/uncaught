@@ -324,8 +324,98 @@ function setupFetchTracking(client: UncaughtClient): () => void {
 }
 
 /**
+ * Set up XHR tracking as breadcrumbs.
+ * Monkey-patches XMLHttpRequest to record API calls with method, URL, status, and duration.
+ * Captures requests made by Axios and other XHR-based libraries.
+ */
+function setupXhrTracking(client: UncaughtClient): () => void {
+  if (typeof XMLHttpRequest === 'undefined') {
+    return () => {};
+  }
+
+  const originalOpen = XMLHttpRequest.prototype.open;
+  const originalSend = XMLHttpRequest.prototype.send;
+
+  // Get the Uncaught API endpoint to exclude self-reporting requests
+  const config = client.getConfig?.() ?? {};
+  const apiEndpoint =
+    (config as Record<string, unknown>).endpoint ??
+    (config as Record<string, unknown>).dsn ??
+    '';
+  const uncaughtEndpoints: string[] = ['uncaught.dev', 'api.uncaught'];
+  if (typeof apiEndpoint === 'string' && apiEndpoint) {
+    try {
+      uncaughtEndpoints.push(new URL(apiEndpoint).hostname);
+    } catch {
+      uncaughtEndpoints.push(apiEndpoint);
+    }
+  }
+
+  const isUncaughtRequest = (url: string): boolean =>
+    uncaughtEndpoints.some((ep) => ep && url.includes(ep));
+
+  XMLHttpRequest.prototype.open = function (
+    method: string,
+    url: string | URL,
+    ...rest: unknown[]
+  ): void {
+    (this as XMLHttpRequest & { _uncaught_method?: string; _uncaught_url?: string })._uncaught_method = method.toUpperCase();
+    (this as XMLHttpRequest & { _uncaught_url?: string })._uncaught_url = String(url);
+    return originalOpen.apply(this, [method, url, ...rest] as Parameters<typeof originalOpen>);
+  };
+
+  XMLHttpRequest.prototype.send = function (
+    body?: Document | XMLHttpRequestBodyInit | null
+  ): void {
+    const xhr = this as XMLHttpRequest & { _uncaught_method?: string; _uncaught_url?: string };
+    const method = xhr._uncaught_method ?? 'GET';
+    const url = xhr._uncaught_url ?? '';
+
+    if (isUncaughtRequest(url)) {
+      return originalSend.call(this, body);
+    }
+
+    const startTime = Date.now();
+
+    const handleEnd = (): void => {
+      try {
+        const duration = Date.now() - startTime;
+        const status = xhr.status;
+        const isError = status === 0 || status >= 400;
+        const displayUrl = truncate(url, 150);
+
+        client.addBreadcrumb({
+          type: 'api_call',
+          category: 'xhr',
+          message: `${method} ${displayUrl} [${status || 'Error'}]`,
+          level: isError ? 'error' : 'info',
+          data: {
+            method,
+            url: displayUrl,
+            status,
+            statusText: xhr.statusText,
+            duration,
+          },
+        });
+      } catch {
+        // Never crash
+      }
+    };
+
+    xhr.addEventListener('loadend', handleEnd);
+
+    return originalSend.call(this, body);
+  };
+
+  return () => {
+    XMLHttpRequest.prototype.open = originalOpen;
+    XMLHttpRequest.prototype.send = originalSend;
+  };
+}
+
+/**
  * Set up automatic DOM breadcrumb tracking including clicks,
- * navigation changes, and fetch API calls.
+ * navigation changes, fetch API calls, and XHR requests.
  *
  * @param client - The UncaughtClient instance to add breadcrumbs to.
  * @returns A cleanup function that removes all listeners and restores patched functions.
@@ -362,6 +452,14 @@ export function setupDomBreadcrumbs(client: UncaughtClient): () => void {
   } catch (e) {
     if (process.env.NODE_ENV === 'development') {
       console.error('[Uncaught] Failed to set up fetch tracking:', e);
+    }
+  }
+
+  try {
+    cleanups.push(setupXhrTracking(client));
+  } catch (e) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Uncaught] Failed to set up XHR tracking:', e);
     }
   }
 
