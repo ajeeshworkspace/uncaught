@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.0
+
+### @uncaughtdev/core
+
+- **feat:** Source map support — auto-resolve minified production stack traces to original source
+- **feat:** Node.js server-side error handlers (`setupNodeHandlers`) for `uncaughtException` and `unhandledRejection`
+- **feat:** Express error middleware (`expressErrorHandler`) with request context capture
+- **feat:** Fastify error handler plugin (`fastifyErrorPlugin`) with request context capture
+- **feat:** Release tracking — `config.release` flows through events, storage, and dashboard
+- **feat:** Environment filtering — `config.environment` with dashboard filter dropdown
+- **feat:** Webhook notifications — POST to any URL when a new error fingerprint is first seen
+- **feat:** User feedback support — `client.submitFeedback()` API for attaching user context to errors
+
+### @uncaughtdev/react
+
+- **feat:** Web Vitals tracking (LCP, FID, CLS, FCP, TTFB) via native `PerformanceObserver`
+- **feat:** `useErrorHandler` hook — wraps event handlers (onClick, onChange) with error capture
+- **feat:** `withErrorCapture` HOF — standalone error wrapping for class components
+- **feat:** XHR instrumentation — Axios and other XHR-based libraries tracked as breadcrumbs
+- **feat:** User feedback widget in Error Boundary — `showDialog` renders a feedback form
+
 ## 0.1.2
 
 ### @uncaughtdev/core

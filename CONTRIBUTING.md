@@ -20,8 +20,10 @@ pnpm build
 
 ```
 packages/
-  core/       — Core engine: transport, breadcrumbs, fingerprinting, CLI, dashboard
-  react/      — React/Next.js SDK: Provider, Error Boundary, global handlers
+  core/       — Core engine: transport, breadcrumbs, fingerprinting, CLI, dashboard,
+                source maps, Node.js handlers, webhooks
+  react/      — React/Next.js SDK: Provider, Error Boundary, global handlers,
+                Web Vitals, event handler capture, XHR tracking
   supabase/   — Supabase wrapper: query tracking, error parsing, RLS explainer
 ```
 
