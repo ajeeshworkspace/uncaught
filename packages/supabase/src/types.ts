@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — Supabase-specific type definitions
+// @uncaughtdev/supabase — Supabase-specific type definitions
 // ---------------------------------------------------------------------------
 
 /**

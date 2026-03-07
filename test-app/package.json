@@ -11,8 +11,8 @@
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@uncaught/core": "workspace:*",
-    "@uncaught/react": "workspace:*"
+    "@uncaughtdev/core": "workspace:*",
+    "@uncaughtdev/react": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

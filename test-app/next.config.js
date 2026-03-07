@@ -2,7 +2,7 @@
 const nextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // The @uncaught/core transport uses dynamic import('fs/promises')
+      // The @uncaughtdev/core transport uses dynamic import('fs/promises')
       // which is only executed server-side, but webpack still tries to resolve it.
       // Tell webpack to treat these as empty modules on the client.
       config.resolve.fallback = {

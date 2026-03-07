@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — public API barrel export
+// @uncaughtdev/core — public API barrel export
 // ---------------------------------------------------------------------------
 
 export { initUncaught, getClient, UncaughtClient } from './client';

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — runtime / platform environment detector
+// @uncaughtdev/core — runtime / platform environment detector
 // ---------------------------------------------------------------------------
 
 import type { EnvironmentInfo } from './types';

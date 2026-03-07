@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — human-readable error explanations
+// @uncaughtdev/supabase — human-readable error explanations
 // ---------------------------------------------------------------------------
 //
 // Maps Supabase / PostgreSQL error codes to developer-friendly explanations

@@ -1,4 +1,4 @@
-# @uncaught/react
+# @uncaughtdev/react
 
 React and Next.js SDK for [Uncaught](https://github.com/AjeeshDevops/uncaught) error monitoring.
 
@@ -11,7 +11,7 @@ npx uncaught init
 Or manually:
 
 ```bash
-npm install @uncaught/react
+npm install @uncaughtdev/react
 ```
 
 ## What's included

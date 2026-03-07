@@ -16,4 +16,5 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2020',
   outDir: 'dist',
+  external: ['better-sqlite3'],
 });

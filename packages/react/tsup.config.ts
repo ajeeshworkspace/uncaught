@@ -11,5 +11,5 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2020',
   outDir: 'dist',
-  external: ['react', 'react-dom', '@uncaught/core'],
+  external: ['react', 'react-dom', '@uncaughtdev/core'],
 });

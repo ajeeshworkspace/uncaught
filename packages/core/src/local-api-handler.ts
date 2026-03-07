@@ -1,10 +1,10 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — Next.js App Router local API handler
+// @uncaughtdev/core — Next.js App Router local API handler
 // ---------------------------------------------------------------------------
 //
 // Usage:
 //   // app/api/uncaught/local/route.ts
-//   export { POST } from '@uncaught/core/local-api-handler';
+//   export { POST } from '@uncaughtdev/core/local-api-handler';
 //
 // ---------------------------------------------------------------------------
 
@@ -170,4 +170,18 @@ export async function writeEvents(events: UncaughtEvent[]): Promise<void> {
   const tmpIndex = indexPath + '.tmp';
   await fs.writeFile(tmpIndex, JSON.stringify(issues, null, 2), 'utf-8');
   await fs.rename(tmpIndex, indexPath);
+
+  // Also write to SQLite
+  try {
+    const { openStore } = await import('./sqlite-store');
+    const dbPath = path.join(baseDir, 'uncaught.db');
+    const store = openStore(dbPath);
+    for (const event of events) {
+      if (!event.fingerprint) continue;
+      store.insertEvent(event);
+    }
+    store.close();
+  } catch {
+    // SQLite is best-effort — flat files are the primary store
+  }
 }

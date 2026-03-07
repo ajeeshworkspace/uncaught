@@ -1,6 +1,6 @@
 'use client';
 
-import { UncaughtProvider } from '@uncaught/react';
+import { UncaughtProvider } from '@uncaughtdev/react';
 
 export default function RootLayout({
   children,

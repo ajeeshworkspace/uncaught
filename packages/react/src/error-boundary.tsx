@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Component } from 'react';
-import type { UncaughtClient } from '@uncaught/core';
+import type { UncaughtClient } from '@uncaughtdev/core';
 import { UncaughtContext } from './context';
 import type { UncaughtErrorBoundaryProps, ErrorBoundaryState } from './types';
 

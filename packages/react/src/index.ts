@@ -20,8 +20,8 @@ export type {
   ErrorBoundaryState,
 } from './types';
 
-// --- Re-exports from @uncaught/core ---
-export { initUncaught, getClient } from '@uncaught/core';
+// --- Re-exports from @uncaughtdev/core ---
+export { initUncaught, getClient } from '@uncaughtdev/core';
 
 export type {
   UncaughtConfig,
@@ -29,4 +29,4 @@ export type {
   UncaughtEvent,
   Breadcrumb,
   EnvironmentInfo,
-} from '@uncaught/core';
+} from '@uncaughtdev/core';

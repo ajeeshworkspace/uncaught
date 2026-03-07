@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useReportError, useBreadcrumb } from '@uncaught/react';
+import { useReportError, useBreadcrumb } from '@uncaughtdev/react';
 import { BuggyComponent } from './buggy-component';
 
 export default function Home() {

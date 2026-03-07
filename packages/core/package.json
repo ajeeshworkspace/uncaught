@@ -1,6 +1,6 @@
 {
-  "name": "@uncaught/core",
-  "version": "0.1.0",
+  "name": "@uncaughtdev/core",
+  "version": "0.1.2",
   "description": "Core engine for Uncaught error monitoring — transport, breadcrumbs, and fix prompt generation",
   "license": "MIT",
   "author": "Uncaught",
@@ -54,7 +54,11 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0"
+  },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^25.3.3",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",

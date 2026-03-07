@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — deep Proxy wrapper
+// @uncaughtdev/supabase — deep Proxy wrapper
 // ---------------------------------------------------------------------------
 //
 // Creates a transparent Proxy around a SupabaseClient that intercepts all
@@ -19,8 +19,8 @@
 // 6. We ALWAYS return the original result — completely transparent.
 // ---------------------------------------------------------------------------
 
-import { getClient, sanitize } from '@uncaught/core';
-import type { Breadcrumb, OperationInfo } from '@uncaught/core';
+import { getClient, sanitize } from '@uncaughtdev/core';
+import type { Breadcrumb, OperationInfo } from '@uncaughtdev/core';
 import { QueryTracker } from './query-tracker';
 import { parseSupabaseError, type ErrorParserContext } from './error-parser';
 import type { WrapSupabaseOptions } from './types';

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — breadcrumb ring-buffer store
+// @uncaughtdev/core — breadcrumb ring-buffer store
 // ---------------------------------------------------------------------------
 
 import type { Breadcrumb, BreadcrumbStore } from './types';

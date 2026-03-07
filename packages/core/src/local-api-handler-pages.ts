@@ -1,10 +1,10 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — Next.js Pages Router local API handler
+// @uncaughtdev/core — Next.js Pages Router local API handler
 // ---------------------------------------------------------------------------
 //
 // Usage:
 //   // pages/api/uncaught/local.ts
-//   export { default } from '@uncaught/core/local-api-handler/pages';
+//   export { default } from '@uncaughtdev/core/local-api-handler/pages';
 //
 // ---------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import { writeEvents } from './local-api-handler';
 
 /**
  * Minimal type for the Next.js Pages API request.
- * We intentionally avoid importing `next` so that `@uncaught/core` has
+ * We intentionally avoid importing `next` so that `@uncaughtdev/core` has
  * zero runtime dependencies.
  */
 interface PagesApiRequest {

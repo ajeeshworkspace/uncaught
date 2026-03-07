@@ -1,4 +1,4 @@
-import type { UncaughtClient, UncaughtConfig } from '@uncaught/core';
+import type { UncaughtClient, UncaughtConfig } from '@uncaughtdev/core';
 
 /**
  * Augmented Window interface to access Next.js internals.
@@ -259,8 +259,8 @@ export function setupNextJsNavigation(client: UncaughtClient): () => void {
  *
  * Usage in layout.tsx:
  * ```tsx
- * import { UncaughtProvider } from '@uncaught/react';
- * import { withUncaught } from '@uncaught/react';
+ * import { UncaughtProvider } from '@uncaughtdev/react';
+ * import { withUncaught } from '@uncaughtdev/react';
  *
  * const uncaughtConfig = withUncaught({
  *   dsn: 'your-dsn-here',

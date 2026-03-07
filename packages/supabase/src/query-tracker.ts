@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — query chain tracker
+// @uncaughtdev/supabase — query chain tracker
 // ---------------------------------------------------------------------------
 //
 // Records each method call in a Supabase query builder chain so that errors
 // can be reported with full context about what the developer was trying to do.
 // ---------------------------------------------------------------------------
 
-import { sanitize } from '@uncaught/core';
-import type { OperationInfo } from '@uncaught/core';
+import { sanitize } from '@uncaughtdev/core';
+import type { OperationInfo } from '@uncaughtdev/core';
 import type { QueryChainStep, TrackedQuery } from './types';
 
 /** Maximum number of items to keep from bulk insert/upsert arrays. */

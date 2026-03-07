@@ -1,4 +1,4 @@
-# @uncaught/core
+# @uncaughtdev/core
 
 Core engine for [Uncaught](https://github.com/AjeeshDevops/uncaught) error monitoring.
 
@@ -11,7 +11,7 @@ npx uncaught init
 Or manually:
 
 ```bash
-npm install @uncaught/core
+npm install @uncaughtdev/core
 ```
 
 ## What's included

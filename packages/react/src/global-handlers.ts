@@ -1,4 +1,4 @@
-import type { UncaughtClient } from '@uncaught/core';
+import type { UncaughtClient } from '@uncaughtdev/core';
 
 /**
  * Patterns for errors that are typically noise and should be ignored.

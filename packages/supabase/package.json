@@ -1,5 +1,5 @@
 {
-  "name": "@uncaught/supabase",
+  "name": "@uncaughtdev/supabase",
   "version": "0.1.0",
   "description": "Supabase client wrapper for Uncaught — captures failed queries, auth errors, and function invocations",
   "license": "MIT",
@@ -39,10 +39,10 @@
   },
   "peerDependencies": {
     "@supabase/supabase-js": ">=2.0.0",
-    "@uncaught/core": "workspace:*"
+    "@uncaughtdev/core": "workspace:*"
   },
   "dependencies": {
-    "@uncaught/core": "workspace:*"
+    "@uncaughtdev/core": "workspace:*"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.43.0",

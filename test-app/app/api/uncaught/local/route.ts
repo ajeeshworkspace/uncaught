@@ -1,1 +1,1 @@
-export { POST } from '@uncaught/core/local-api-handler';
+export { POST } from '@uncaughtdev/core/local-api-handler';

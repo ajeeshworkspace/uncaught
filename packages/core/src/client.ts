@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — UncaughtClient  (SDK entry-point)
+// @uncaughtdev/core — UncaughtClient  (SDK entry-point)
 // ---------------------------------------------------------------------------
 
 import type {
@@ -23,7 +23,7 @@ import { detectEnvironment } from './env-detector';
 import { buildFixPrompt } from './prompt-builder';
 import { createTransport } from './transport';
 
-const SDK_NAME = '@uncaught/core';
+const SDK_NAME = '@uncaughtdev/core';
 const SDK_VERSION = '0.1.0';
 
 // ---------------------------------------------------------------------------

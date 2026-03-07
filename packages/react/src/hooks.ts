@@ -1,7 +1,7 @@
 'use client';
 
 import { useContext, useCallback } from 'react';
-import type { UncaughtClient, Breadcrumb } from '@uncaught/core';
+import type { UncaughtClient, Breadcrumb } from '@uncaughtdev/core';
 import { UncaughtContext } from './context';
 
 /**

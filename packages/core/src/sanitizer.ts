@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — PII / secret sanitizer
+// @uncaughtdev/core — PII / secret sanitizer
 // ---------------------------------------------------------------------------
 
 /** Default key patterns that are always redacted. */

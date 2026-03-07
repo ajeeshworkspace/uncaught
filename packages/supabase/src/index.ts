@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — public API
+// @uncaughtdev/supabase — public API
 // ---------------------------------------------------------------------------
 //
 // Minimal surface: one function, one type export. Wrap your Supabase client
@@ -8,7 +8,7 @@
 //
 // Usage:
 //   import { createClient } from '@supabase/supabase-js';
-//   import { wrapSupabase } from '@uncaught/supabase';
+//   import { wrapSupabase } from '@uncaughtdev/supabase';
 //
 //   const supabase = wrapSupabase(
 //     createClient(SUPABASE_URL, SUPABASE_ANON_KEY),
@@ -30,7 +30,7 @@ export type { TrackedQuery, QueryChainStep, ParsedSupabaseError } from './types'
  *
  * The returned client has the exact same type and behavior as the original.
  * All Supabase operations work identically — the wrapper only observes
- * results and captures errors through the @uncaught/core client.
+ * results and captures errors through the @uncaughtdev/core client.
  *
  * @param client  - A SupabaseClient instance from `createClient()`.
  * @param options - Optional configuration for which subsystems to track.
@@ -41,8 +41,8 @@ export type { TrackedQuery, QueryChainStep, ParsedSupabaseError } from './types'
  * @example
  * ```ts
  * import { createClient } from '@supabase/supabase-js';
- * import { initUncaught } from '@uncaught/core';
- * import { wrapSupabase } from '@uncaught/supabase';
+ * import { initUncaught } from '@uncaughtdev/core';
+ * import { wrapSupabase } from '@uncaughtdev/supabase';
  *
  * initUncaught({ projectKey: 'my-project' });
  *

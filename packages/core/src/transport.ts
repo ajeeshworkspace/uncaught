@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — transport layer (console / local-file / remote)
+// @uncaughtdev/core — transport layer (console / local-file / remote)
 // ---------------------------------------------------------------------------
 
 import type {
@@ -200,6 +200,17 @@ function createLocalFileTransport(config: UncaughtConfig): Transport {
           eventFile,
           promptFile
         );
+
+        // --- Also write to SQLite -----------------------------------------
+        try {
+          const { openStore } = await import('./sqlite-store');
+          const dbPath = pathModule.join(baseDir, 'uncaught.db');
+          const store = openStore(dbPath);
+          store.insertEvent(event);
+          store.close();
+        } catch {
+          // SQLite is best-effort
+        }
       } catch {
         // Never crash the host app.
       }

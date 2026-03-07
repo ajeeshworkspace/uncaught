@@ -11,5 +11,5 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2020',
   outDir: 'dist',
-  external: ['@supabase/supabase-js', '@uncaught/core'],
+  external: ['@supabase/supabase-js', '@uncaughtdev/core'],
 });

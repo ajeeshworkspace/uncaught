@@ -1,17 +1,17 @@
-# @uncaught/supabase
+# @uncaughtdev/supabase
 
 Supabase client wrapper for [Uncaught](https://github.com/AjeeshDevops/uncaught) error monitoring.
 
 ## Install
 
 ```bash
-npm install @uncaught/supabase
+npm install @uncaughtdev/supabase
 ```
 
 ## Usage
 
 ```typescript
-import { wrapSupabase } from '@uncaught/supabase';
+import { wrapSupabase } from '@uncaughtdev/supabase';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = wrapSupabase(createClient(url, key));

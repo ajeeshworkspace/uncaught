@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — fix-prompt builder
+// @uncaughtdev/core — fix-prompt builder
 // ---------------------------------------------------------------------------
 
 import type { UncaughtEvent, Breadcrumb, EnvironmentInfo, OperationInfo, RequestInfo } from './types';

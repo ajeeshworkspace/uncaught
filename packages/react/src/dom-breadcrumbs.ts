@@ -1,4 +1,4 @@
-import type { UncaughtClient } from '@uncaught/core';
+import type { UncaughtClient } from '@uncaughtdev/core';
 
 /**
  * Maximum length for breadcrumb messages to avoid excessively large payloads.

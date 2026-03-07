@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/supabase — error parser
+// @uncaughtdev/supabase — error parser
 // ---------------------------------------------------------------------------
 //
 // Detects the type of Supabase error by inspecting its shape/properties, then

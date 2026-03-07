@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — shared type definitions
+// @uncaughtdev/core — shared type definitions
 // ---------------------------------------------------------------------------
 
 /** How captured events are delivered. */

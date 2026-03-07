@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { initUncaught } from '@uncaught/core';
-import type { UncaughtClient } from '@uncaught/core';
+import { initUncaught } from '@uncaughtdev/core';
+import type { UncaughtClient } from '@uncaughtdev/core';
 import { UncaughtContext } from './context';
 import { UncaughtErrorBoundary } from './error-boundary';
 import { setupGlobalHandlers } from './global-handlers';

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @uncaught/core — sliding-window rate limiter
+// @uncaughtdev/core — sliding-window rate limiter
 // ---------------------------------------------------------------------------
 
 /** Window duration in milliseconds (60 seconds). */

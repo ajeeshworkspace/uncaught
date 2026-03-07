@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { UncaughtConfig, UncaughtClient, UncaughtEvent } from '@uncaught/core';
+import type { UncaughtConfig, UncaughtClient, UncaughtEvent } from '@uncaughtdev/core';
 
 /**
  * Value provided by the UncaughtContext to descendant components.
