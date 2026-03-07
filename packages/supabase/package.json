@@ -1,6 +1,6 @@
 {
   "name": "@uncaughtdev/supabase",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Supabase client wrapper for Uncaught — captures failed queries, auth errors, and function invocations",
   "license": "MIT",
   "author": "Uncaught",

@@ -1,6 +1,6 @@
 {
   "name": "@uncaughtdev/core",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Core engine for Uncaught error monitoring — transport, breadcrumbs, and fix prompt generation",
   "license": "MIT",
   "author": "Uncaught",
