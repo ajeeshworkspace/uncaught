@@ -3,70 +3,130 @@
 [![npm version](https://img.shields.io/npm/v/@uncaughtdev/core.svg)](https://www.npmjs.com/package/@uncaughtdev/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/AjeeshDevops/uncaught/actions/workflows/ci.yml/badge.svg)](https://github.com/AjeeshDevops/uncaught/actions/workflows/ci.yml)
-[![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
 
-Error monitoring for vibe coders. One command setup. AI-ready fix prompts.
+Your AI coding assistant catches and fixes your bugs automatically.
 
-## Quick Start
+Uncaught captures errors locally and feeds them to **Cursor**, **Claude Code**, or **Windsurf** via MCP. You never open a dashboard — your AI already knows what broke and how to fix it.
 
-```bash
-npx uncaughtdev init
+## Setup (30 seconds)
+
+### Step 1 — Add MCP to your AI tool
+
+**Cursor** — add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "uncaught": {
+      "command": "npx",
+      "args": ["-y", "@uncaughtdev/core", "uncaught-mcp"]
+    }
+  }
+}
 ```
 
-That's it. Start your dev server, trigger an error, then:
+**Claude Code** — run once:
 
 ```bash
-npx uncaughtdev
+claude mcp add uncaught -- npx -y @uncaughtdev/core uncaught-mcp
 ```
 
-## Features
+**Windsurf** — add to `~/.windsurf/mcp.json` (same format as Cursor)
 
-- **Auto-captures errors** — browser errors, unhandled rejections, failed fetches, and XHR requests
-- **Server-side capture** — Node.js process handlers, Express middleware, Fastify plugin
-- **React Error Boundary** — with built-in user feedback widget
-- **Event handler capture** — `useErrorHandler` hook catches errors in onClick, onChange, etc.
-- **DOM breadcrumbs** — clicks, navigation, fetch calls, and XHR requests
-- **Web Vitals** — LCP, FID, CLS, FCP, TTFB tracked automatically (zero dependencies)
-- **Source map support** — resolves minified production stack traces to original source
-- **Webhook notifications** — POST to Slack, Discord, or any URL on new errors
-- **Release tracking** — tag errors with version, filter in dashboard
-- **Environment filtering** — separate production, staging, and development errors
-- **AI-ready fix prompts** — full context (breadcrumbs, env, stack) formatted for AI assistants
-- **Local-first** — all data stays in `.uncaught/` on your machine (SQLite)
-- **Web dashboard** — browse errors, filter by status/environment, copy fix prompts
-- **Supabase support** — wraps your client to catch failed queries with RLS explanations
+**Claude Desktop** — add to `claude_desktop_config.json` (same format as Cursor)
+
+### Step 2 — Tell your AI to set it up
+
+> "Set up error monitoring in my project"
+
+Your AI calls the `setup_uncaught` tool, which auto-detects your framework (React, Next.js, Vite, Express, etc.), installs packages, and patches your entry files.
+
+**That's it.** Errors are now captured automatically.
+
+## How It Works
+
+1. **Your app throws** — Uncaught captures the error with full context (stack trace, breadcrumbs, environment)
+2. **Stored locally** — Everything goes to `.uncaught/` on your machine. Nothing leaves your laptop.
+3. **Come back and ask your AI** — "Any bugs?" — it reads the errors via MCP, understands the context, and writes the fix
+
+## What Your AI Can Do
+
+| Tool | What it does |
+|------|-------------|
+| `setup_uncaught` | Install Uncaught in your project (auto-detects framework) |
+| `list_errors` | See all errors at a glance, filter by status or environment |
+| `get_error` | Full details: stack trace, breadcrumbs, environment, request context |
+| `get_fix_prompt` | AI-ready diagnosis with everything needed to fix the bug |
+| `get_stats` | Dashboard numbers: total, open, resolved, ignored |
+| `resolve_error` | Mark a bug as fixed after you ship the fix |
+| `search_errors` | Find errors by message text |
+
+## Everything It Captures
+
+- Browser errors, unhandled rejections, failed fetch & XHR requests
+- React component errors via Error Boundary (with user feedback widget)
+- Event handler errors (`onClick`, `onChange`) via `useErrorHandler` hook
+- DOM breadcrumbs: clicks, navigation, API calls
+- Web Vitals: LCP, FID, CLS, FCP, TTFB (zero dependencies)
+- Server-side: Node.js process errors, Express middleware, Fastify plugin
+- Source-mapped production stack traces
+- Release versions and deployment environments
+- Supabase failed queries with RLS explanations
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
-| [`@uncaughtdev/core`](https://www.npmjs.com/package/@uncaughtdev/core) | Core engine — transport, breadcrumbs, fingerprinting, CLI, dashboard, source maps, server handlers, webhooks |
-| [`@uncaughtdev/react`](https://www.npmjs.com/package/@uncaughtdev/react) | React/Next.js SDK — Provider, Error Boundary, global handlers, Web Vitals, event handler capture |
-| [`@uncaughtdev/supabase`](https://www.npmjs.com/package/@uncaughtdev/supabase) | Supabase wrapper — query tracking, error parsing, RLS explainer |
+| [`@uncaughtdev/core`](https://www.npmjs.com/package/@uncaughtdev/core) | Core engine + MCP server + CLI + dashboard |
+| [`@uncaughtdev/react`](https://www.npmjs.com/package/@uncaughtdev/react) | React/Next.js SDK — Provider, Error Boundary, Web Vitals |
+| [`@uncaughtdev/supabase`](https://www.npmjs.com/package/@uncaughtdev/supabase) | Supabase wrapper — query tracking, RLS explainer |
 
-## Configuration
+---
+
+<details>
+<summary><strong>Manual Installation</strong></summary>
+
+If you prefer to set things up manually instead of using the MCP `setup_uncaught` tool:
+
+```bash
+npx uncaughtdev init
+```
+
+This auto-detects your framework, installs packages, and patches entry files. Or install manually:
+
+```bash
+npm install @uncaughtdev/core @uncaughtdev/react
+```
+
+</details>
+
+<details>
+<summary><strong>Configuration</strong></summary>
 
 ```typescript
 import { initUncaught } from '@uncaughtdev/core';
 
 const client = initUncaught({
   projectKey: 'my-app',
-  environment: 'production',       // Filter errors by deploy environment
-  release: '1.2.0',                // Tag errors with your app version
-  webhookUrl: 'https://hooks.slack.com/services/...', // Notify on new errors
-  transport: 'local',              // 'local' | 'remote' | 'console'
-  maxBreadcrumbs: 30,              // Ring buffer size (default: 20)
-  maxEventsPerMinute: 30,          // Rate limit (default: 30)
-  ignoreErrors: ['ResizeObserver'], // Drop matching errors
-  sanitizeKeys: ['secret'],        // Extra PII keys to redact
-  beforeSend: (event) => {         // Modify or drop events
+  environment: 'production',
+  release: '1.2.0',
+  webhookUrl: 'https://hooks.slack.com/services/...',
+  transport: 'local',
+  maxBreadcrumbs: 30,
+  maxEventsPerMinute: 30,
+  ignoreErrors: ['ResizeObserver'],
+  sanitizeKeys: ['secret'],
+  beforeSend: (event) => {
     if (event.error.message.includes('benign')) return null;
     return event;
   },
 });
 ```
 
-## React / Next.js
+</details>
+
+<details>
+<summary><strong>React / Next.js</strong></summary>
 
 ```tsx
 import { UncaughtProvider, UncaughtErrorBoundary } from '@uncaughtdev/react';
@@ -82,121 +142,51 @@ function App() {
 }
 ```
 
-### Error Boundary with Feedback
+**Error Boundary with Feedback** — When `showDialog` is enabled, users see a feedback form asking "What were you doing when this happened?" — their response is attached to the error.
 
-When `showDialog` is enabled, users see a styled error dialog with a feedback form asking "What were you doing when this happened?" — their response is attached to the error event.
-
-### Event Handler Capture
-
-React Error Boundary doesn't catch errors in event handlers. Use `useErrorHandler` to wrap them:
+**Event Handler Capture** — React Error Boundary doesn't catch `onClick`/`onChange` errors. Use `useErrorHandler`:
 
 ```tsx
 import { useErrorHandler } from '@uncaughtdev/react';
 
 function MyComponent() {
-  const handleClick = useErrorHandler((e) => {
-    // If this throws, Uncaught captures it automatically
-    riskyOperation();
+  const handleClick = useErrorHandler(() => {
+    riskyOperation(); // Errors captured automatically
   });
-
-  return <button onClick={handleClick}>Click me</button>;
+  return <button onClick={handleClick}>Click</button>;
 }
 ```
 
-For class components, use `withErrorCapture`:
+**Hooks** — `useUncaught()`, `useReportError()`, `useBreadcrumb()`, `withErrorCapture()`
 
-```tsx
-import { withErrorCapture } from '@uncaughtdev/react';
+</details>
 
-const safeHandler = withErrorCapture(riskyFunction, client);
-```
-
-### Hooks
-
-```tsx
-import { useUncaught, useReportError, useBreadcrumb } from '@uncaughtdev/react';
-
-const client = useUncaught();           // Get the client instance
-const reportError = useReportError();    // Report errors manually
-const addBreadcrumb = useBreadcrumb();   // Add custom breadcrumbs
-```
-
-## Server-Side (Node.js)
-
-### Process-Level Handlers
-
-Captures `uncaughtException` and `unhandledRejection`:
+<details>
+<summary><strong>Server-Side (Node.js / Express / Fastify)</strong></summary>
 
 ```typescript
-import { initUncaught, setupNodeHandlers } from '@uncaughtdev/core';
+import { initUncaught, setupNodeHandlers, expressErrorHandler } from '@uncaughtdev/core';
 
 const client = initUncaught({ projectKey: 'my-api' });
-const cleanup = setupNodeHandlers(client);
-```
 
-### Express
+// Capture uncaughtException and unhandledRejection
+setupNodeHandlers(client);
 
-```typescript
-import { expressErrorHandler } from '@uncaughtdev/core';
-
-// Register AFTER all routes
+// Express (register AFTER all routes)
 app.use(expressErrorHandler(client));
 ```
 
-### Fastify
+**Fastify:**
 
 ```typescript
 import { fastifyErrorPlugin } from '@uncaughtdev/core';
-
 fastify.register(fastifyErrorPlugin(client));
 ```
 
-## Web Vitals
+</details>
 
-Automatically tracked when using `@uncaughtdev/react` — no configuration needed:
-
-- **LCP** (Largest Contentful Paint)
-- **FID** (First Input Delay)
-- **CLS** (Cumulative Layout Shift)
-- **FCP** (First Contentful Paint)
-- **TTFB** (Time to First Byte)
-
-Metrics are recorded as breadcrumbs and visible in error context. Uses native `PerformanceObserver` — zero additional dependencies.
-
-## Webhook Notifications
-
-Get notified when a new error type is first seen:
-
-```typescript
-initUncaught({
-  webhookUrl: 'https://hooks.slack.com/services/T00/B00/xxx',
-});
-```
-
-Sends a POST request with JSON payload:
-
-```json
-{
-  "title": "Cannot read properties of undefined",
-  "errorType": "TypeError",
-  "fingerprint": "a1b2c3d4",
-  "level": "error",
-  "timestamp": "2025-01-15T10:30:00.000Z",
-  "release": "1.2.0",
-  "environment": "production",
-  "fixPrompt": "..."
-}
-```
-
-Only fires once per unique error fingerprint. Works with Slack, Discord, or any HTTP endpoint.
-
-## Source Maps
-
-Production stack traces are automatically resolved when source maps are available. The dashboard searches `.next/`, `dist/`, and `build/` directories for `.map` files and displays the original source file, line, and column.
-
-No configuration needed — just make sure your build outputs source maps.
-
-## CLI
+<details>
+<summary><strong>CLI</strong></summary>
 
 ```bash
 npx uncaughtdev                # List all captured issues
@@ -207,29 +197,45 @@ npx uncaughtdev clear          # Clear all issues
 npx uncaughtdev dashboard      # Open web dashboard
 ```
 
-## Web Dashboard
+</details>
+
+<details>
+<summary><strong>Web Dashboard</strong></summary>
 
 ```bash
 npx uncaughtdev dashboard
 ```
 
-Opens a local web UI at `http://localhost:3300` where you can:
+Opens a local web UI at `http://localhost:3300` with:
+- Error list with status/environment filtering
+- Release badges and environment tags
+- Full stack traces with source map resolution
+- User feedback display
+- AI-ready fix prompts to copy-paste
 
-- Browse all captured errors with filtering (open / resolved / ignored)
-- Filter by deployment environment (production / staging / development)
-- View release version badges on each issue
-- View full stack traces (with source map resolution), breadcrumbs, and environment info
-- Read user feedback submitted through the error boundary widget
-- Copy AI-ready fix prompts to paste into your editor or AI assistant
-- Mark issues as resolved or ignored
+</details>
 
-## How It Works
+<details>
+<summary><strong>Webhooks</strong></summary>
 
-1. **Capture** — SDK hooks into global error handlers, fetch, XHR, and framework-specific boundaries
-2. **Enrich** — Adds breadcrumbs (clicks, navigation, API calls, Web Vitals), environment info, and user context
-3. **Fingerprint** — Groups duplicate errors by normalizing stack traces
-4. **Generate** — Creates an AI-ready fix prompt with all context needed to debug
-5. **Store** — Writes to local SQLite database in `.uncaught/`
+Get notified on new errors:
+
+```typescript
+initUncaught({
+  webhookUrl: 'https://hooks.slack.com/services/T00/B00/xxx',
+});
+```
+
+Fires once per unique error. Works with Slack, Discord, or any HTTP endpoint.
+
+</details>
+
+<details>
+<summary><strong>Source Maps</strong></summary>
+
+Production stack traces are automatically resolved when `.map` files exist in `.next/`, `dist/`, or `build/`. No configuration needed.
+
+</details>
 
 ## Contributing
 
@@ -237,11 +243,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Roadmap
 
-- [ ] Remote transport (send errors to a hosted endpoint)
+- [ ] Remote transport (hosted endpoint)
 - [ ] Vue / Svelte adapters
-- [ ] Hosted dashboard (SaaS tier)
+- [ ] Hosted dashboard (SaaS)
 - [ ] AI auto-fix suggestions
-- [ ] Slack / Discord native integrations (rich formatting)
 
 ## License
 

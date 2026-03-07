@@ -12,6 +12,7 @@
 - **feat:** Environment filtering — `config.environment` with dashboard filter dropdown
 - **feat:** Webhook notifications — POST to any URL when a new error fingerprint is first seen
 - **feat:** User feedback support — `client.submitFeedback()` API for attaching user context to errors
+- **feat:** MCP server for AI coding assistants (Cursor, Claude Code, Windsurf) — 7 tools including `setup_uncaught`, `list_errors`, `get_fix_prompt`
 
 ### @uncaughtdev/react
 

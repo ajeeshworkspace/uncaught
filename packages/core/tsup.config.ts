@@ -6,6 +6,7 @@ export default defineConfig({
     'src/local-api-handler.ts',
     'src/local-api-handler-pages.ts',
     'src/local-viewer.ts',
+    'src/mcp-server.ts',
   ],
   format: ['esm', 'cjs'],
   dts: true,
@@ -16,5 +17,5 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2020',
   outDir: 'dist',
-  external: ['better-sqlite3', 'source-map'],
+  external: ['better-sqlite3', 'source-map', '@modelcontextprotocol/sdk'],
 });
