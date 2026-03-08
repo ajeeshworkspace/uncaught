@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "uncaught"
+name = "uncaughtdev"
 version = "0.1.0"
 description = "Local-first, AI-ready error monitoring for Python — catch bugs, get AI-powered fixes"
 readme = "README.md"
@@ -37,9 +37,9 @@ all = ["fastapi>=0.68.0", "flask>=2.0.0", "django>=3.2", "sqlalchemy>=1.4.0"]
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
 
 [project.urls]
-Homepage = "https://github.com/nicofishman/uncaught"
-Documentation = "https://github.com/nicofishman/uncaught"
-Repository = "https://github.com/nicofishman/uncaught"
+Homepage = "https://github.com/ajeeshworkspace/uncaught"
+Documentation = "https://github.com/ajeeshworkspace/uncaught"
+Repository = "https://github.com/ajeeshworkspace/uncaught"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/uncaught"]
