@@ -75,11 +75,44 @@ Your AI calls the `setup_uncaught` tool, which auto-detects your framework (Reac
 
 ## Packages
 
+### JavaScript / TypeScript (npm)
+
 | Package | Description |
 |---------|-------------|
 | [`@uncaughtdev/core`](https://www.npmjs.com/package/@uncaughtdev/core) | Core engine + MCP server + CLI + dashboard |
-| [`@uncaughtdev/react`](https://www.npmjs.com/package/@uncaughtdev/react) | React/Next.js SDK — Provider, Error Boundary, Web Vitals |
-| [`@uncaughtdev/supabase`](https://www.npmjs.com/package/@uncaughtdev/supabase) | Supabase wrapper — query tracking, RLS explainer |
+| [`@uncaughtdev/react`](https://www.npmjs.com/package/@uncaughtdev/react) | React/Next.js — Provider, Error Boundary, Web Vitals |
+| [`@uncaughtdev/vue`](https://www.npmjs.com/package/@uncaughtdev/vue) | Vue 3 — Plugin, composables, router integration |
+| [`@uncaughtdev/svelte`](https://www.npmjs.com/package/@uncaughtdev/svelte) | Svelte/SvelteKit — error hooks, client setup |
+| [`@uncaughtdev/angular`](https://www.npmjs.com/package/@uncaughtdev/angular) | Angular — ErrorHandler, HttpInterceptor, NgModule |
+| [`@uncaughtdev/supabase`](https://www.npmjs.com/package/@uncaughtdev/supabase) | Supabase — query tracking, RLS explainer |
+| [`@uncaughtdev/prisma`](https://www.npmjs.com/package/@uncaughtdev/prisma) | Prisma — middleware for error capture + breadcrumbs |
+| [`@uncaughtdev/drizzle`](https://www.npmjs.com/package/@uncaughtdev/drizzle) | Drizzle — query wrapper with error capture |
+
+### Backend SDKs
+
+| Language | Package | Install |
+|----------|---------|---------|
+| Python | [`uncaughtdev`](https://pypi.org/project/uncaughtdev/) | `pip install uncaughtdev` |
+| Go | `uncaught-go` | `go get github.com/ajeeshworkspace/uncaught/packages/go` |
+| Ruby | [`uncaught`](https://rubygems.org/gems/uncaught) | `gem install uncaught` |
+| Rust | [`uncaught`](https://crates.io/crates/uncaught) | `cargo add uncaught` |
+| Java | `uncaught-java` | See `packages/java/` |
+| PHP | `uncaughtdev/uncaught` | See `packages/php/` |
+| Elixir | `uncaught` | See `packages/elixir/` |
+| C#/.NET | `Uncaught` | See `packages/dotnet/` |
+
+### Framework Integrations
+
+| SDK | Frameworks |
+|-----|-----------|
+| Python | FastAPI, Flask, Django, SQLAlchemy |
+| Go | net/http, Gin, Echo, Fiber |
+| Ruby | Rails (Railtie), Sinatra |
+| Java | Spring Boot (auto-config + filter) |
+| Rust | Axum, Actix (feature flags) |
+| PHP | Laravel (ServiceProvider + Middleware) |
+| Elixir | Phoenix, Plug |
+| C#/.NET | ASP.NET Core middleware |
 
 ---
 
@@ -243,8 +276,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Roadmap
 
+- [x] Vue / Svelte / Angular adapters
+- [x] Prisma / Drizzle DB wrappers
+- [x] Python, Go, Ruby, Java, Rust, PHP, Elixir, C#/.NET SDKs
 - [ ] Remote transport (hosted endpoint)
-- [ ] Vue / Svelte adapters
 - [ ] Hosted dashboard (SaaS)
 - [ ] AI auto-fix suggestions
 
