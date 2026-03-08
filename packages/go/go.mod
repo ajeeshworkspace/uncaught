@@ -1,3 +1,3 @@
-module github.com/uncaughtdev/uncaught-go
+module github.com/ajeeshworkspace/uncaught/packages/go
 
 go 1.21
