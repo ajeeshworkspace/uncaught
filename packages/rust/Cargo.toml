@@ -4,11 +4,13 @@ version = "0.1.0"
 edition = "2021"
 description = "Local-first, AI-ready error monitoring for Rust"
 license = "MIT"
+repository = "https://github.com/ajeeshworkspace/uncaught"
+homepage = "https://github.com/ajeeshworkspace/uncaught"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-uuid = { version = "1", features = ["v4"] }
+uuid = { version = ">=1.0, <1.12", features = ["v4"] }
 chrono = "0.4"
 regex = "1"
 

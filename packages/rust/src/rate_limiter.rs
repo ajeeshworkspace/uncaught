@@ -57,19 +57,21 @@ impl RateLimiter {
         }
 
         // Prune and check per-fingerprint limit
-        let fp_timestamps = state
-            .buckets
-            .entry(fingerprint.to_string())
-            .or_insert_with(Vec::new);
-        fp_timestamps.retain(|&t| t > cutoff);
+        {
+            let fp_timestamps = state
+                .buckets
+                .entry(fingerprint.to_string())
+                .or_insert_with(Vec::new);
+            fp_timestamps.retain(|&t| t > cutoff);
 
-        if fp_timestamps.len() >= self.per_fingerprint_max {
-            return false;
+            if fp_timestamps.len() >= self.per_fingerprint_max {
+                return false;
+            }
         }
 
         // Record this event
         state.global_timestamps.push(now);
-        fp_timestamps.push(now);
+        state.buckets.get_mut(fingerprint).unwrap().push(now);
 
         // Periodic cleanup: remove empty buckets
         if state.buckets.len() > 1000 {
