@@ -1,0 +1,38 @@
+export function parsePrismaError(error: any): { code: string; description: string } {
+  const code = error?.code ?? '';
+  const descriptions: Record<string, string> = {
+    P2000: 'Value too long for column',
+    P2001: 'Record not found',
+    P2002: 'Unique constraint violation',
+    P2003: 'Foreign key constraint failed',
+    P2004: 'Constraint failed on the database',
+    P2005: 'Invalid value for field type',
+    P2006: 'Invalid value provided',
+    P2007: 'Data validation error',
+    P2008: 'Failed to parse the query',
+    P2009: 'Failed to validate the query',
+    P2010: 'Raw query failed',
+    P2011: 'Null constraint violation',
+    P2012: 'Missing required value',
+    P2013: 'Missing required argument',
+    P2014: 'Required relation violation',
+    P2015: 'Related record not found',
+    P2016: 'Query interpretation error',
+    P2017: 'Records for relation not connected',
+    P2018: 'Required connected records not found',
+    P2019: 'Input error',
+    P2020: 'Value out of range',
+    P2021: 'Table does not exist',
+    P2022: 'Column does not exist',
+    P2023: 'Inconsistent column data',
+    P2024: 'Timed out fetching connection from pool',
+    P2025: 'Record not found for operation',
+    P2026: 'Unsupported feature by current database provider',
+    P2027: 'Multiple errors occurred on the database',
+    P2028: 'Transaction API error',
+    P2030: 'Cannot find a fulltext index',
+    P2033: 'Number does not fit into a 64-bit integer',
+    P2034: 'Transaction failed due to a write conflict or deadlock',
+  };
+  return { code, description: descriptions[code] ?? error.message ?? 'Unknown Prisma error' };
+}

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UncaughtEvent",
+  "description": "The canonical event payload produced by all Uncaught SDKs",
+  "type": "object",
+  "required": ["eventId", "timestamp", "level", "fingerprint", "error", "breadcrumbs", "fixPrompt", "sdk"],
+  "properties": {
+    "eventId": { "type": "string", "pattern": "^[0-9a-f-]{36}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "projectKey": { "type": "string" },
+    "level": { "type": "string", "enum": ["fatal", "error", "warning", "info", "debug"] },
+    "fingerprint": { "type": "string", "pattern": "^[0-9a-f]{8}$" },
+    "release": { "type": "string" },
+    "error": {
+      "type": "object",
+      "required": ["message", "type"],
+      "properties": {
+        "message": { "type": "string" },
+        "type": { "type": "string" },
+        "stack": { "type": "string" },
+        "resolvedStack": { "type": "string" },
+        "componentStack": { "type": "string" },
+        "raw": {}
+      }
+    },
+    "breadcrumbs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "category", "message", "timestamp"],
+        "properties": {
+          "type": { "type": "string", "enum": ["click", "navigation", "api_call", "db_query", "auth", "console", "web_vital", "custom"] },
+          "category": { "type": "string" },
+          "message": { "type": "string" },
+          "timestamp": { "type": "string" },
+          "data": { "type": "object" },
+          "level": { "type": "string", "enum": ["fatal", "error", "warning", "info", "debug"] }
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string" },
+        "url": { "type": "string" },
+        "headers": { "type": "object" },
+        "body": {},
+        "query": { "type": "object" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "type": { "type": "string" },
+        "method": { "type": "string" },
+        "params": { "type": "object" },
+        "errorCode": { "type": "string" },
+        "errorDetails": { "type": "string" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "framework": { "type": "string" },
+        "frameworkVersion": { "type": "string" },
+        "runtime": { "type": "string" },
+        "runtimeVersion": { "type": "string" },
+        "platform": { "type": "string" },
+        "os": { "type": "string" },
+        "browser": { "type": "string" },
+        "browserVersion": { "type": "string" },
+        "deviceType": { "type": "string" },
+        "locale": { "type": "string" },
+        "timezone": { "type": "string" },
+        "url": { "type": "string" },
+        "deploy": { "type": "string" }
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "username": { "type": "string" }
+      }
+    },
+    "userFeedback": { "type": "string" },
+    "fixPrompt": { "type": "string" },
+    "sdk": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    }
+  }
+}

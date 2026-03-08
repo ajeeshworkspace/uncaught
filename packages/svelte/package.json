@@ -1,0 +1,58 @@
+{
+  "name": "@uncaughtdev/svelte",
+  "version": "0.1.0",
+  "description": "Svelte and SvelteKit SDK for Uncaught error monitoring",
+  "license": "MIT",
+  "author": "Uncaught",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AjeeshDevops/uncaught.git",
+    "directory": "packages/svelte"
+  },
+  "homepage": "https://github.com/AjeeshDevops/uncaught#readme",
+  "keywords": [
+    "svelte",
+    "sveltekit",
+    "error-monitoring",
+    "error-handler",
+    "debugging",
+    "vibe-coding"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "svelte": ">=4.0.0",
+    "@sveltejs/kit": ">=1.0.0",
+    "@uncaughtdev/core": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@sveltejs/kit": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@uncaughtdev/core": "workspace:*"
+  },
+  "devDependencies": {
+    "svelte": "^4.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}

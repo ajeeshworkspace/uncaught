@@ -1,0 +1,8 @@
+{
+  "name": "uncaughtdev/uncaught",
+  "description": "Local-first, AI-ready error monitoring for PHP",
+  "type": "library",
+  "license": "MIT",
+  "require": { "php": ">=8.0" },
+  "autoload": { "psr-4": { "Uncaught\\": "src/" } }
+}

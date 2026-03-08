@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IssueEntry",
+  "description": "An entry in the issues.json index file",
+  "type": "object",
+  "required": ["fingerprint", "title", "errorType", "count", "affectedUsers", "firstSeen", "lastSeen", "status", "fixPromptFile", "latestEventFile"],
+  "properties": {
+    "fingerprint": { "type": "string", "pattern": "^[0-9a-f]{8}$" },
+    "title": { "type": "string" },
+    "errorType": { "type": "string" },
+    "count": { "type": "integer", "minimum": 1 },
+    "affectedUsers": { "type": "array", "items": { "type": "string" } },
+    "firstSeen": { "type": "string" },
+    "lastSeen": { "type": "string" },
+    "status": { "type": "string", "enum": ["open", "resolved", "ignored"] },
+    "fixPromptFile": { "type": "string" },
+    "latestEventFile": { "type": "string" },
+    "release": { "type": "string" },
+    "environment": { "type": "string" }
+  }
+}

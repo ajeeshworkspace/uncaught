@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "description": "Fingerprint test vectors for cross-language SDK validation. All SDKs must produce identical fingerprints.",
+  "algorithm": "DJB2 hash of: {type}\\n{normalizedMessage}\\n{frame1}\\n{frame2}\\n{frame3}",
+  "fingerprintVectors": [
+    {
+      "description": "Basic TypeError with V8 stack",
+      "input": { "type": "TypeError", "message": "Cannot read property foo of undefined", "stack": "TypeError: Cannot read property foo of undefined\n    at processTickets (/app/src/handlers.js:42:10)\n    at Object.<anonymous> (/app/src/index.js:15:3)\n    at Module._compile (/app/node_modules/module.js:655:30)" },
+      "expectedNormalizedMessage": "Cannot read property foo of undefined",
+      "expectedFrames": ["handlers.js:processTickets", "index.js:Object.<anonymous>", "module.js:Module._compile"],
+      "expectedFingerprint": "2bcf3d40"
+    },
+    {
+      "description": "Message with UUID normalization",
+      "input": { "type": "Error", "message": "User 550e8400-e29b-41d4-a716-446655440000 not found", "stack": "" },
+      "expectedNormalizedMessage": "User <UUID> not found",
+      "expectedFingerprint": "3a710136"
+    },
+    {
+      "description": "Message with large number normalization",
+      "input": { "type": "Error", "message": "Transaction 123456789 failed", "stack": "" },
+      "expectedNormalizedMessage": "Transaction <HEX> failed",
+      "expectedFingerprint": "f63d0723"
+    },
+    {
+      "description": "Message with ISO timestamp normalization",
+      "input": { "type": "Error", "message": "Request at 2024-01-15T10:30:45.123Z timed out", "stack": "" },
+      "expectedNormalizedMessage": "Request at <NUM>-01-15T10:30:45.123Z timed out",
+      "expectedFingerprint": "ccf85040"
+    },
+    {
+      "description": "Message with hex string normalization",
+      "input": { "type": "Error", "message": "Invalid token abcdef0123456789", "stack": "" },
+      "expectedNormalizedMessage": "Invalid token <HEX>",
+      "expectedFingerprint": "0f4e7c20"
+    },
+    {
+      "description": "Empty stack trace",
+      "input": { "type": "ReferenceError", "message": "x is not defined", "stack": "" },
+      "expectedFingerprint": "f4d149dc"
+    },
+    {
+      "description": "Single stack frame",
+      "input": { "type": "Error", "message": "fail", "stack": "Error: fail\n    at doSomething (/app/util.js:10:5)" },
+      "expectedFrames": ["util.js:doSomething"],
+      "expectedFingerprint": "34304863"
+    },
+    {
+      "description": "No type provided defaults to Error",
+      "input": { "message": "something broke", "stack": "" },
+      "expectedFingerprint": "caefb1fa"
+    },
+    {
+      "description": "Empty message",
+      "input": { "type": "Error", "message": "", "stack": "" },
+      "expectedFingerprint": "b1224bb9"
+    },
+    {
+      "description": "SpiderMonkey format stack",
+      "input": { "type": "Error", "message": "test error", "stack": "handleClick@http://localhost:3000/static/js/main.js:42:15\nrender@http://localhost:3000/static/js/main.js:100:7\ncallCallback@http://localhost:3000/static/js/vendor.js:200:3" },
+      "expectedFrames": ["main.js:handleClick", "main.js:render", "vendor.js:callCallback"],
+      "expectedFingerprint": "4091a3a3"
+    },
+    {
+      "description": "Complex message with multiple normalizations",
+      "input": { "type": "Error", "message": "User 550e8400-e29b-41d4-a716-446655440000 balance 999999 at 2024-06-01T08:00:00Z token abcdef01", "stack": "" },
+      "expectedNormalizedMessage": "User <UUID> balance <NUM> at <NUM>-06-01T08:00:00Z token <HEX>",
+      "expectedFingerprint": "358758a3"
+    },
+    {
+      "description": "Non-ASCII characters in message",
+      "input": { "type": "Error", "message": "Échec de la connexion", "stack": "" },
+      "expectedFingerprint": "9de1b59c"
+    },
+    {
+      "description": "Message with newlines",
+      "input": { "type": "Error", "message": "line1\nline2\nline3", "stack": "" },
+      "expectedFingerprint": "d3c75bfb"
+    },
+    {
+      "description": "Python-style error type",
+      "input": { "type": "ValueError", "message": "invalid literal for int", "stack": "" },
+      "expectedFingerprint": "f3632f9c"
+    },
+    {
+      "description": "Go-style error type",
+      "input": { "type": "runtime.panicError", "message": "runtime error: index out of range [5] with length 3", "stack": "" },
+      "expectedFingerprint": "0c8d1e0e"
+    },
+    {
+      "description": "Java-style error type",
+      "input": { "type": "java.lang.NullPointerException", "message": "Cannot invoke method on null", "stack": "" },
+      "expectedFingerprint": "8e9abe82"
+    },
+    {
+      "description": "Multiple UUIDs and numbers",
+      "input": { "type": "Error", "message": "Order 550e8400-e29b-41d4-a716-446655440000 item 12345 user a1b2c3d4-e5f6-7890-abcd-ef1234567890", "stack": "" },
+      "expectedNormalizedMessage": "Order <UUID> item <NUM> user <UUID>",
+      "expectedFingerprint": "31aa032f"
+    }
+  ],
+  "rawDjb2Vectors": [
+    { "description": "empty string", "input": "", "expected": "00001505" },
+    { "description": "hello", "input": "hello", "expected": "0f923099" },
+    { "description": "Hello World", "input": "Hello World", "expected": "87781081" },
+    { "description": "single char", "input": "a", "expected": "0002b606" },
+    { "description": "unicode", "input": "café", "expected": "7c9503b8" }
+  ]
+}
